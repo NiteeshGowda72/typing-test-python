@@ -1,11 +1,9 @@
 import time
 import random
 
-sentences = [
-    "Hi this is nithish gowda",
-    "Hello how are you",
-    "I am going to germany next year"
-]
+with open("sentences.txt", "r") as file:
+    sentences = file.readlines()
+    sentences = [line.strip() for line in file.readlines() if line.strip()]
 
 
 def rounds(n):
@@ -17,12 +15,12 @@ def rounds(n):
 
         input("Press Enter to start...")
 
-        print("\nType this:")
+        print("Type this:")
         print(choice)
 
         start = time.time()
 
-        user_input = input("\n")
+        user_input = input("")
 
         end = time.time()
 
@@ -48,8 +46,8 @@ def rounds(n):
         # Accuracy
         correct_chars = 0
 
-        for i in range(min(len(choice), len(user_input))):
-            if choice[i] == user_input[i]:
+        for j in range(min(len(choice), len(user_input))):
+            if choice[j] == user_input[i]:
                 correct_chars += 1
 
         total_chars = max(len(choice), len(user_input))
