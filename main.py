@@ -1,22 +1,14 @@
 import time
 import random
 
-with open("sentences.txt", "r") as file:
-    sentences = [line.strip() for line in file.readlines() if line.strip()]
+# Load sentences
 
 
-def compare(choice, user_input):
-    if choice.lower() == user_input.lower():
-        print("✅ Correct!")
-    else:
-        print("❌ Incorrect!")
+def load_sentences():
+    with open("sentences.txt", "r") as file:
+        return [line.strip() for line in file.readlines() if line.strip()]
 
-
-def calculate_wpm(user_input, time_taken):
-    words = len(user_input.split())
-    wpm = (words / time_taken) * 60 if time_taken > 0 else 0
-    print(f"Typing Speed: {round(wpm, 2)} WPM")
-    return wpm
+# Return raw values for accuracy
 
 
 def calculate_accuracy(choice, user_input):
@@ -27,46 +19,54 @@ def calculate_accuracy(choice, user_input):
             correct_chars += 1
 
     total_chars = max(len(choice), len(user_input))
-    accuracy = (correct_chars / total_chars) * 100
 
-    print(f"Accuracy: {round(accuracy, 2)}%")
-    return accuracy
+    return correct_chars, total_chars
 
 
-test_duration = 60
-start_time = time.time()
+# Main typing test
+def typing_test():
+    sentences = load_sentences()
 
-scores = []
-total_words = 0
+    test_duration = 60
+    start_time = time.time()
 
-while time.time() - start_time < test_duration:
-    choice = random.choice(sentences)
+    total_words = 0
+    total_correct_chars = 0
+    total_chars = 0
 
-    print("\nType this:")
-    print(choice)
+    while time.time() - start_time < test_duration:
+        choice = random.choice(sentences)
 
-    start = time.time()
-    user_input = input("Start typing: ")
-    end = time.time()
+        print("\nType this:")
+        print(choice)
 
-    time_taken = end - start
+        user_input = input("Start typing: ")
 
-    total_words += len(user_input.split())
+        # Word count
+        total_words += len(user_input.split())
 
-    compare(choice, user_input)
+        # Accuracy (using function)
+        correct, total = calculate_accuracy(choice, user_input)
+        total_correct_chars += correct
+        total_chars += total
 
-    wpm = calculate_wpm(user_input, time_taken)
-    scores.append(wpm)
+    # Final results
+    print("\n⏱ Time's up!")
 
-    calculate_accuracy(choice, user_input)
+    final_wpm = (total_words / test_duration) * 60
+
+    if total_chars > 0:
+        final_accuracy = (total_correct_chars / total_chars) * 100
+    else:
+        final_accuracy = 0
+
+    print("\n🏆 Final Results")
+    print(f"Final WPM: {round(final_wpm, 2)}")
+    print(f"Accuracy: {round(final_accuracy, 2)}%")
+
+    total_time_taken = time.time() - start_time
+    print(f"Total time: {round(total_time_taken, 2)} sec")
 
 
-# AFTER LOOP
-print("\n⏱ Time's up!")
-
-final_wpm = (total_words / test_duration) * 60
-
-print("\n🏆 Final Results")
-print(f"Final WPM: {round(final_wpm, 2)}")
-print(f"Best WPM: {round(max(scores), 2)}")
-print(f"Average WPM: {round(sum(scores)/len(scores), 2)}")
+# Run program
+typing_test()
