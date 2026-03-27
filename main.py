@@ -33,37 +33,40 @@ def calculate_accuracy(choice, user_input):
     return accuracy
 
 
-def rounds(n):
-    scores = []
+test_duration = 60
+start_time = time.time()
 
-    for round_num in range(n):
-        print(f"\n--- Round {round_num + 1} ---")
+scores = []
+total_words = 0
 
-        choice = random.choice(sentences)
+while time.time() - start_time < test_duration:
+    choice = random.choice(sentences)
 
-        input("Press Enter to start...")
+    print("\nType this:")
+    print(choice)
 
-        print("\nType this:")
-        print(choice)
+    start = time.time()
+    user_input = input("Start typing: ")
+    end = time.time()
 
-        start = time.time()
-        user_input = input("Start typing: ")
-        end = time.time()
+    time_taken = end - start
 
-        time_taken = end - start
+    total_words += len(user_input.split())
 
-        print(f"⏱ Time taken: {round(time_taken, 2)} seconds")
+    compare(choice, user_input)
 
-        compare(choice, user_input)
+    wpm = calculate_wpm(user_input, time_taken)
+    scores.append(wpm)
 
-        wpm = calculate_wpm(user_input, time_taken)
-        scores.append(wpm)
-
-        calculate_accuracy(choice, user_input)
-
-    print("\n🏆 Final Results")
-    print(f"Best WPM: {round(max(scores), 2)}")
-    print(f"Average WPM: {round(sum(scores)/len(scores), 2)}")
+    calculate_accuracy(choice, user_input)
 
 
-rounds(3)
+# AFTER LOOP
+print("\n⏱ Time's up!")
+
+final_wpm = (total_words / test_duration) * 60
+
+print("\n🏆 Final Results")
+print(f"Final WPM: {round(final_wpm, 2)}")
+print(f"Best WPM: {round(max(scores), 2)}")
+print(f"Average WPM: {round(sum(scores)/len(scores), 2)}")
