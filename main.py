@@ -19,7 +19,6 @@ def calculate_accuracy(choice, user_input):
             correct_chars += 1
 
     total_chars = max(len(choice), len(user_input))
-
     return correct_chars, total_chars
 
 
