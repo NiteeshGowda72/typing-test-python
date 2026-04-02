@@ -1,3 +1,4 @@
+import tkinter as tk
 import time
 import random
 
@@ -7,6 +8,7 @@ import random
 def load_sentences():
     with open("sentences.txt", "r") as file:
         return [line.strip() for line in file.readlines() if line.strip()]
+
 
 # Return raw values for accuracy
 
@@ -22,11 +24,13 @@ def calculate_accuracy(choice, user_input):
     return correct_chars, total_chars
 
 
+sentences = load_sentences()
 # Main typing test
-def typing_test():
-    sentences = load_sentences()
 
-    test_duration = 60
+
+def typing_test():
+
+    test_duration = 6
     start_time = time.time()
 
     total_words = 0
@@ -67,5 +71,43 @@ def typing_test():
     print(f"Total time: {round(total_time_taken, 2)} sec")
 
 
-# Run program
-typing_test()
+# # Run program
+# typing_test()
+
+
+# Step 1: create window
+root = tk.Tk()
+root.title("Typing Test")
+root.geometry("600x400")
+
+# ✅ Step 2: add label HERE
+sentence_label = tk.Label(root, text="Hello", font=("Arial", 16))
+sentence_label.pack()
+
+entry = tk.Entry(root, width=40, font=("Arial", 14))
+entry.pack(pady=10)
+
+current_sentence = ""
+
+
+def new_sentence():
+    global current_sentence
+    current_sentence = random.choice(sentences)
+    sentence_label.config(text=current_sentence)
+    entry.delete(0, tk.END)  # optional but good
+
+
+def submit():
+    user_text = entry.get()
+    print(user_text)
+    entry.delete(0, tk.END)
+
+
+start_button = tk.Button(root, text="Start", command=new_sentence)
+start_button.pack(pady=10)
+
+button = tk.Button(root, text="Submit", command=submit)
+button.pack(pady=10)
+
+# Run app
+root.mainloop()
