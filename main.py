@@ -28,52 +28,53 @@ sentences = load_sentences()
 # Main typing test
 
 
-def typing_test():
+# def typing_test():
 
-    test_duration = 6
-    start_time = time.time()
+#     test_duration = 6
+#     start_time = time.time()
 
-    total_words = 0
-    total_correct_chars = 0
-    total_chars = 0
+#     total_words = 0
+#     total_correct_chars = 0
+#     total_chars = 0
 
-    while time.time() - start_time < test_duration:
-        choice = random.choice(sentences)
+#     while time.time() - start_time < test_duration:
+#         choice = random.choice(sentences)
 
-        print("\nType this:")
-        print(choice)
+#         print("\nType this:")
+#         print(choice)
 
-        user_input = input("Start typing: ")
+#         user_input = input("Start typing: ")
 
-        # Word count
-        total_words += len(user_input.split())
+#         # Word count
+#         total_words += len(user_input.split())
 
-        # Accuracy (using function)
-        correct, total = calculate_accuracy(choice, user_input)
-        total_correct_chars += correct
-        total_chars += total
+#         # Accuracy (using function)
+#         correct, total = calculate_accuracy(choice, user_input)
+#         total_correct_chars += correct
+#         total_chars += total
 
-    # Final results
-    print("\n⏱ Time's up!")
+#     # Final results
+#     print("\n⏱ Time's up!")
 
-    final_wpm = (total_words / test_duration) * 60
+#     final_wpm = (total_words / test_duration) * 60
 
-    if total_chars > 0:
-        final_accuracy = (total_correct_chars / total_chars) * 100
-    else:
-        final_accuracy = 0
+#     if total_chars > 0:
+#         final_accuracy = (total_correct_chars / total_chars) * 100
+#     else:
+#         final_accuracy = 0
 
-    print("\n🏆 Final Results")
-    print(f"Final WPM: {round(final_wpm, 2)}")
-    print(f"Accuracy: {round(final_accuracy, 2)}%")
+#     print("\n🏆 Final Results")
+#     print(f"Final WPM: {round(final_wpm, 2)}")
+#     print(f"Accuracy: {round(final_accuracy, 2)}%")
 
-    total_time_taken = time.time() - start_time
-    print(f"Total time: {round(total_time_taken, 2)} sec")
+#     total_time_taken = time.time() - start_time
+#     print(f"Total time: {round(total_time_taken, 2)} sec")
 
 
 # # Run program
 # typing_test()
 
+test_running = False
 
 # Step 1: create window
 root = tk.Tk()
@@ -91,37 +92,85 @@ entry.bind("<Return>", lambda event: submit())
 
 current_sentence = ""
 
+test_duration = 60
+start_time = None
+
+total_words = 0
+total_correct_chars = 0
+total_chars = 0
+
 
 def new_sentence():
     global current_sentence
     current_sentence = random.choice(sentences)
     sentence_label.config(text=current_sentence)
-    entry.delete(0, tk.END)  # optional but good
-
-
-def submit():
-    user_text = entry.get()
-
-    correct, total = calculate_accuracy(current_sentence, user_text)
-
-    if total > 0:
-        accuracy = (correct / total) * 100
-    else:
-        accuracy = 0
-
-    result_label.config(text=f"Accuracy: {round(accuracy, 2)}%")
-
     entry.delete(0, tk.END)
 
 
-start_button = tk.Button(root, text="Start", command=new_sentence)
-start_button.pack(pady=10)
+def submit():
+    global total_words, total_correct_chars, total_chars, test_running
 
+    if not test_running:
+        return
+
+    # ⏱ check time
+    if time.time() - start_time >= test_duration:
+        show_result()
+        test_running = False
+        return
+
+    user_text = entry.get()
+
+    total_words += len(user_text.split())
+
+    correct, total = calculate_accuracy(current_sentence, user_text)
+    total_correct_chars += correct
+    total_chars += total
+
+    entry.delete(0, tk.END)
+
+    new_sentence()
+
+
+def start_test():
+    global start_time, total_words, total_correct_chars, total_chars, test_running
+
+    start_time = time.time()
+
+    total_words = 0
+    total_correct_chars = 0
+    total_chars = 0
+
+    test_running = True
+
+    new_sentence()
+
+
+start_button = tk.Button(root, text="Start", command=start_test)
+start_button.pack(pady=10)
 button = tk.Button(root, text="Submit", command=submit)
 button.pack(pady=10)
 
 result_label = tk.Label(root, text="", font=("Arial", 14))
 result_label.pack(pady=10)
+
+
+def show_result():
+    global test_running
+
+    if total_chars > 0:
+        accuracy = (total_correct_chars / total_chars) * 100
+    else:
+        accuracy = 0
+
+    final_wpm = (total_words / test_duration) * 60
+
+    result_label.config(
+        text=f"Final WPM: {round(final_wpm, 2)} | Accuracy: {round(accuracy, 2)}%"
+    )
+
+    test_running = False
+
 
 # Run app
 root.mainloop()
