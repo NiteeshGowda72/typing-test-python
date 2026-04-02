@@ -87,6 +87,8 @@ sentence_label.pack()
 entry = tk.Entry(root, width=40, font=("Arial", 14))
 entry.pack(pady=10)
 
+entry.bind("<Return>", lambda event: submit())
+
 current_sentence = ""
 
 
@@ -99,7 +101,16 @@ def new_sentence():
 
 def submit():
     user_text = entry.get()
-    print(user_text)
+
+    correct, total = calculate_accuracy(current_sentence, user_text)
+
+    if total > 0:
+        accuracy = (correct / total) * 100
+    else:
+        accuracy = 0
+
+    result_label.config(text=f"Accuracy: {round(accuracy, 2)}%")
+
     entry.delete(0, tk.END)
 
 
@@ -108,6 +119,9 @@ start_button.pack(pady=10)
 
 button = tk.Button(root, text="Submit", command=submit)
 button.pack(pady=10)
+
+result_label = tk.Label(root, text="", font=("Arial", 14))
+result_label.pack(pady=10)
 
 # Run app
 root.mainloop()
